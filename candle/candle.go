@@ -1,4 +1,4 @@
-package pricebar
+package candle
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ type Config struct {
 	Timestamp  time.Time
 }
 
-type PriceBar struct {
+type Candle struct {
 	// binary properties saved to disk
 	Id     uint64
 	Open   float64
@@ -34,16 +34,16 @@ func GenerateId(date uint64, time uint32) uint64 {
 	return (date << 16) + uint64(time)
 }
 
-func ExtractDateFromPriceBarId(priceBarId uint64) uint64 {
-	return priceBarId >> 16
+func ExtractDateFromCandleId(candle uint64) uint64 {
+	return candle >> 16
 }
 
-func ExtractTimeFromPriceBarId(priceBarId uint64) uint32 {
-	return uint32(priceBarId % (1 << 16))
+func ExtractTimeFromCandleId(candle uint64) uint32 {
+	return uint32(candle % (1 << 16))
 }
 
-func New(config Config) *PriceBar {
-	bar := PriceBar{}
+func New(config Config) *Candle {
+	bar := Candle{}
 	bar.Symbol = config.Symbol
 	bar.Date = config.Date
 	bar.Time = config.Time
@@ -71,47 +71,47 @@ func New(config Config) *PriceBar {
 	return &bar
 }
 
-func (bar *PriceBar) IsUp() bool {
+func (bar *Candle) IsUp() bool {
 	return bar.IsUpBy(0.0)
 }
 
-func (bar *PriceBar) IsUpBy(threshold float32) bool {
+func (bar *Candle) IsUpBy(threshold float32) bool {
 	return bar.Close > bar.Open+float64(threshold)
 }
 
-func (bar *PriceBar) IsDown() bool {
+func (bar *Candle) IsDown() bool {
 	return bar.IsDownBy(0.0)
 }
 
-func (bar *PriceBar) IsDownBy(threshold float32) bool {
+func (bar *Candle) IsDownBy(threshold float32) bool {
 	return bar.Close < bar.Open-float64(threshold)
 }
 
-func (bar *PriceBar) GetHour() uint32 {
+func (bar *Candle) GetHour() uint32 {
 	return bar.Time / 100
 }
 
-func (bar *PriceBar) GetMinute() uint32 {
+func (bar *Candle) GetMinute() uint32 {
 	return bar.Time % 100
 }
 
-func (bar *PriceBar) GetRange() float64 {
+func (bar *Candle) GetRange() float64 {
 	return bar.High - bar.Low
 }
 
-func (bar *PriceBar) GetBody() float64 {
+func (bar *Candle) GetBody() float64 {
 	return math.Abs(bar.Close - bar.Open)
 }
 
-func (bar *PriceBar) GetHighWick() float64 {
+func (bar *Candle) GetHighWick() float64 {
 	return bar.High - math.Max(bar.Open, bar.Close)
 }
 
-func (bar *PriceBar) GetLowWick() float64 {
+func (bar *Candle) GetLowWick() float64 {
 	return math.Min(bar.Open, bar.Close) - bar.Low
 }
 
-func (bar *PriceBar) FillPriceDataFrom(other *PriceBar) {
+func (bar *Candle) FillPriceDataFrom(other *Candle) {
 	bar.Open = other.Open
 	bar.High = other.High
 	bar.Low = other.Low
@@ -120,7 +120,7 @@ func (bar *PriceBar) FillPriceDataFrom(other *PriceBar) {
 	bar.Volume = other.Volume
 }
 
-func (bar *PriceBar) Aggregate(high float64, low float64, close float64, volume uint64, vwap float64) {
+func (bar *Candle) Aggregate(high float64, low float64, close float64, volume uint64, vwap float64) {
 	bar.High = math.Max(bar.High, high)
 	bar.Low = math.Min(bar.Low, low)
 	bar.Close = close
@@ -135,7 +135,7 @@ func (bar *PriceBar) Aggregate(high float64, low float64, close float64, volume 
 	}
 }
 
-func (bar *PriceBar) ToString(decimalPlaces int) string {
+func (bar *Candle) ToString(decimalPlaces int) string {
 	decimalFormat := fmt.Sprintf("%%.%df", decimalPlaces)
 	outputFormat := fmt.Sprintf("%%d %%4d O=%[1]s H=%[1]s L=%[1]s C=%[1]s V=%%d", decimalFormat)
 	return fmt.Sprintf(outputFormat, bar.Date, bar.Time, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume)

@@ -6,3 +6,5 @@ github.com/achedges/go-assertions v1.0.4 h1:Itj7vnhzfFETnbNYA6hMhr0b1JzwgPDpI3oe
 github.com/achedges/go-assertions v1.0.4/go.mod h1:RvWERfkWjpnf4z3Z3UTb9gsTwSo4nBitDRpm1tDl4/k=
 github.com/achedges/go-assertions v1.0.5 h1:rX0dT8h/XHPu2p160HIlSFNkJyokZRrKK+vHEAy15pU=
 github.com/achedges/go-assertions v1.0.5/go.mod h1:RvWERfkWjpnf4z3Z3UTb9gsTwSo4nBitDRpm1tDl4/k=
+github.com/achedges/go-assertions v1.0.7 h1:XjuXSKBBLzqSCMaLi5mW9WURRvrs8FRqHErgFniApM4=
+github.com/achedges/go-assertions v1.0.7/go.mod h1:RvWERfkWjpnf4z3Z3UTb9gsTwSo4nBitDRpm1tDl4/k=

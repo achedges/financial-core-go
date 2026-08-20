@@ -1,4 +1,4 @@
-package pricebar
+package candle
 
 import (
 	"testing"
@@ -19,7 +19,7 @@ func TestPriceBar_GenerateId(t *testing.T) {
 func TestPriceBar_ExtractDateFromPriceBarId(t *testing.T) {
 	var priceBarId uint64 = 1325873235120
 	var expectedDate uint64 = 20231220
-	var testDate = ExtractDateFromPriceBarId(priceBarId)
+	var testDate = ExtractDateFromCandleId(priceBarId)
 
 	assertions.EqualUints(expectedDate, testDate, t)
 }
@@ -27,7 +27,7 @@ func TestPriceBar_ExtractDateFromPriceBarId(t *testing.T) {
 func TestPriceBar_ExtractTimeFromPriceBarId(t *testing.T) {
 	var priceBarId uint64 = 1325873235120
 	var expectedTime uint32 = 1200
-	var testTime = ExtractTimeFromPriceBarId(priceBarId)
+	var testTime = ExtractTimeFromCandleId(priceBarId)
 
 	assertions.EqualUints(expectedTime, testTime, t)
 }
@@ -35,7 +35,7 @@ func TestPriceBar_ExtractTimeFromPriceBarId(t *testing.T) {
 func TestPriceBar_New_WithSymbol(t *testing.T) {
 	bar := New(Config{Symbol: "TEST"})
 
-	expectedBar := PriceBar{
+	expectedBar := Candle{
 		Symbol: "TEST",
 	}
 
@@ -51,7 +51,7 @@ func TestPriceBar_New_WithSymbolDateTime(t *testing.T) {
 		Time:   930,
 	})
 
-	expectedBar := PriceBar{
+	expectedBar := Candle{
 		Symbol: "TEST",
 		Date:   20260728,
 		Time:   930,
@@ -69,7 +69,7 @@ func TestPriceBar_New_WithSymbolBasis(t *testing.T) {
 		BasisPrice: 10.0,
 	})
 
-	expectedBar := PriceBar{
+	expectedBar := Candle{
 		Symbol: "TEST",
 		Open:   10.0,
 		High:   10.0,
@@ -91,7 +91,7 @@ func TestPriceBar_New_WithSymbolDateTimeBasis(t *testing.T) {
 		BasisPrice: 10.0,
 	})
 
-	expectedBar := PriceBar{
+	expectedBar := Candle{
 		Symbol: "TEST",
 		Date:   20260728,
 		Time:   930,
@@ -115,7 +115,7 @@ func TestPriceBar_New_WithSymbolBasisTimestamp(t *testing.T) {
 		Timestamp:  time.Date(2026, 7, 28, 9, 30, 0, 0, time.UTC),
 	})
 
-	expectedBar := PriceBar{
+	expectedBar := Candle{
 		Symbol: "TEST",
 		Date:   20260728,
 		Time:   930,
@@ -152,7 +152,7 @@ func TestPriceBar_New_NoDateNoId(t *testing.T) {
 }
 
 func TestPriceBar_IsUp(t *testing.T) {
-	upBar := PriceBar{
+	upBar := Candle{
 		Open:  10.0,
 		Close: 11.0,
 	}
@@ -161,7 +161,7 @@ func TestPriceBar_IsUp(t *testing.T) {
 	assertions.True(upBar.IsUpBy(0.9), t)
 	assertions.False(upBar.IsUpBy(1.1), t)
 
-	downBar := PriceBar{
+	downBar := Candle{
 		Open:  10.0,
 		Close: 9.0,
 	}
@@ -172,7 +172,7 @@ func TestPriceBar_IsUp(t *testing.T) {
 }
 
 func TestPriceBar_IsDown(t *testing.T) {
-	downBar := PriceBar{
+	downBar := Candle{
 		Open:  10.0,
 		Close: 9.0,
 	}
@@ -181,7 +181,7 @@ func TestPriceBar_IsDown(t *testing.T) {
 	assertions.True(downBar.IsDownBy(0.9), t)
 	assertions.False(downBar.IsDownBy(1.1), t)
 
-	upBar := PriceBar{
+	upBar := Candle{
 		Open:  10.0,
 		Close: 11.0,
 	}
@@ -192,17 +192,17 @@ func TestPriceBar_IsDown(t *testing.T) {
 }
 
 func TestPriceBar_GetHour(t *testing.T) {
-	bar := PriceBar{Time: 1440}
+	bar := Candle{Time: 1440}
 	assertions.EqualUints(14, bar.GetHour(), t)
 }
 
 func TestPriceBar_GetMinute(t *testing.T) {
-	bar := PriceBar{Time: 1734}
+	bar := Candle{Time: 1734}
 	assertions.EqualUints(34, bar.GetMinute(), t)
 }
 
 func TestPriceBar_GetRange(t *testing.T) {
-	bar := PriceBar{
+	bar := Candle{
 		High: 10.0,
 		Low:  9.0,
 	}
@@ -210,13 +210,13 @@ func TestPriceBar_GetRange(t *testing.T) {
 }
 
 func TestPriceBar_GetBody(t *testing.T) {
-	upBar := PriceBar{
+	upBar := Candle{
 		Open:  10.0,
 		Close: 11.0,
 	}
 	assertions.EqualFloats(1.0, upBar.GetBody(), t)
 
-	downBar := PriceBar{
+	downBar := Candle{
 		Open:  10.0,
 		Close: 9.0,
 	}
@@ -224,7 +224,7 @@ func TestPriceBar_GetBody(t *testing.T) {
 }
 
 func TestPriceBar_GetHighWick(t *testing.T) {
-	bar := PriceBar{
+	bar := Candle{
 		Open:  10.0,
 		Close: 11.0,
 		High:  11.25,
@@ -233,7 +233,7 @@ func TestPriceBar_GetHighWick(t *testing.T) {
 }
 
 func TestPriceBar_GetLowWick(t *testing.T) {
-	bar := PriceBar{
+	bar := Candle{
 		Open:  10.0,
 		Close: 11.0,
 		Low:   9.75,
@@ -242,7 +242,7 @@ func TestPriceBar_GetLowWick(t *testing.T) {
 }
 
 func TestPriceBar_FillPriceDataFrom(t *testing.T) {
-	bar := PriceBar{
+	bar := Candle{
 		Open:   1.0,
 		High:   2.0,
 		Low:    0.9,
@@ -251,7 +251,7 @@ func TestPriceBar_FillPriceDataFrom(t *testing.T) {
 		Volume: 123,
 	}
 
-	var other = PriceBar{}
+	var other = Candle{}
 	other.FillPriceDataFrom(&bar)
 
 	if other != bar {
@@ -260,7 +260,7 @@ func TestPriceBar_FillPriceDataFrom(t *testing.T) {
 }
 
 func TestPriceBar_Aggregate(t *testing.T) {
-	bar := PriceBar{
+	bar := Candle{
 		Open:   10.0,
 		High:   10.0,
 		Low:    10.0,
